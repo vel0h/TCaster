@@ -1,0 +1,32 @@
+name: TCaster
+version: 3.1
+description: Broadcast from console or in-game. But with a name.
+author: tehtros
+website: http://dev.bukkit.org/server-mods/tcaster/
+main: tehtros.bukkit.TCaster.TCaster
+commands:
+  tcast:
+    description: TCast a message.
+    permission: tcaster.tcast
+    usage: You really screwed that up? Honsetly?!? It's just /tcast [message]! Simple!
+  tcastname:
+    description: Changes TCaster's name. This is the same as changing it in config.yml.
+    permission: tcaster.name
+    usage: Trying to change TCaster's name? It's /tcastname [newname].
+  tcastcolor:
+    description: Changes the color of the message text. This is the same as changing it in config.yml.
+    permission: tcaster.color
+    usage: Trying to change the message color? It's /tcastcolor [colorcode].
+  tcastreload:
+    description: Reloads the TCaster config.yml.
+    permission: tcaster.reload
+    usage: Trying to reload TCaster? It's /tcastreload.
+permissions:
+  tcaster.tcast:
+    description: Allows you to TCast a message.
+  tcaster.name:
+    description: Allows you to change TCaster's name. This is the same as changing it in config.yml.
+  tcaster.color:
+    description: Allows you to change the color of the message text. This is the same as changing it in config.yml.
+  tcaster.reload:
+    description: Allows you to reload the TCaster config.yml. Please, give this to admins only...
