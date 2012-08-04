@@ -24,7 +24,7 @@ import tehtros.bukkit.TCaster.Metrics.Graph;
 public class TCaster extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	private int sentMessages = 0;
-	// private boolean DEVBUG = true;
+	private boolean DEVBUG = false;
 
 	TCastAPI api = new TCastAPI(this);
 
@@ -51,7 +51,8 @@ public class TCaster extends JavaPlugin {
 				}
 				api.tcast(text);
 				sentMessages++;
-				log.info("Messages Sent:" + sentMessages);
+				if(DEVBUG)
+					log.info("Messages Sent: " + sentMessages);
 			}
 		}
 

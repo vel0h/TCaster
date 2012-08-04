@@ -37,10 +37,13 @@ public class TCastAPI extends JavaPlugin {
 
 	private String config(String input) {
 		// Check for config. + Other crap.
-		if(configFile == null) {
-			configFile = new File(new File("plugins", "TCastAPI"), "TCastAPI.yml");
+		try {
+			if(configFile == null) {
+				configFile = new File(new File("plugins", "TCastAPI"), "TCastAPI.yml");
+			}
+		} catch(Exception e) {
+			
 		}
-		
 		config = YamlConfiguration.loadConfiguration(configFile);
 
 		// Reload the config.
