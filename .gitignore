@@ -1,4 +1,5 @@
 bin/
 .classpath
+.gitignore
 .project
 TCaster.jar

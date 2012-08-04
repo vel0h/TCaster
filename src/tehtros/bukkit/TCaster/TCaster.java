@@ -13,7 +13,7 @@ import tehtros.bukkit.TCastAPI.*;
 
 /**
  * 
- * * Le TCaster plugin
+ * This plugin lets you broadcast messages from the server. With style.
  * 
  * @author tehtros
  * 
