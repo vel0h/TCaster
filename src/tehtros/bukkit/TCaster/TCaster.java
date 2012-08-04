@@ -12,6 +12,7 @@ import tehtros.bukkit.Exceptions.FailedConfigSave;
 import tehtros.bukkit.Exceptions.NoNameSupplied;
 import tehtros.bukkit.Exceptions.NotValidColor;
 import tehtros.bukkit.TCastAPI.TCastAPI;
+import tehtros.bukkit.TCaster.Metrics.Graph;
 
 /**
  * 
@@ -22,7 +23,6 @@ import tehtros.bukkit.TCastAPI.TCastAPI;
  */
 public class TCaster extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
-	private boolean DEVBUG = true;
 	private int sentMessages = 0;
 	
 	TCastAPI api = new TCastAPI(this);
@@ -30,6 +30,16 @@ public class TCaster extends JavaPlugin {
 	public void onEnable() {
 		try {
 			Metrics mets = new Metrics(this);
+			
+			Graph graph = mets.createGraph("Extra Stats");
+			
+			graph.addPlotter(new Metrics.Plotter("Messages Sent") {
+		        @Override
+		        public int getValue() {
+		            return sentMessages;
+		        }
+		    });
+			
 			mets.start();
 		} catch(IOException e) {
 			log.warning("[TCaster] Metrics fails to start!");
@@ -51,7 +61,6 @@ public class TCaster extends JavaPlugin {
 				}
 				api.tcast(text);
 				sentMessages++;
-				sendGraph();
 			}
 		}
 
@@ -102,24 +111,5 @@ public class TCaster extends JavaPlugin {
 			}
 		}
 		return true;
-	}
-	
-	private void sendGraph() {
-		try {
-			Metrics mets = new Metrics(this);
-			
-			mets.addCustomData(new Metrics.Plotter("Messages Sent") {
-		        @Override
-		        public int getValue() {
-		            return sentMessages;
-		        }
-		    });
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if(DEVBUG) {
-			log.info("[DEVBUG] Sent Messages: " + sentMessages);
-		}
 	}
 }
