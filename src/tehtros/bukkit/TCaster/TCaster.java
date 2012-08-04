@@ -24,23 +24,13 @@ import tehtros.bukkit.TCaster.Metrics.Graph;
 public class TCaster extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	private int sentMessages = 0;
-	
+	// private boolean DEVBUG = true;
+
 	TCastAPI api = new TCastAPI(this);
 
 	public void onEnable() {
 		try {
-			Metrics mets = new Metrics(this);
-			
-			Graph graph = mets.createGraph("Extra Stats");
-			
-			graph.addPlotter(new Metrics.Plotter("Messages Sent") {
-		        @Override
-		        public int getValue() {
-		            return sentMessages;
-		        }
-		    });
-			
-			mets.start();
+			startMetrics();
 		} catch(IOException e) {
 			log.warning("[TCaster] Metrics fails to start!");
 		}
@@ -61,6 +51,7 @@ public class TCaster extends JavaPlugin {
 				}
 				api.tcast(text);
 				sentMessages++;
+				log.info("Messages Sent:" + sentMessages);
 			}
 		}
 
@@ -97,7 +88,7 @@ public class TCaster extends JavaPlugin {
 				} catch(FailedConfigSave e) {
 					sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The new config failed to save!");
 				}
-				
+
 				sender.sendMessage(api.colors(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The chat color has been changed to " + api.getChatColor() + "THIS" + ChatColor.YELLOW + "!"));
 			}
 		}
@@ -111,5 +102,21 @@ public class TCaster extends JavaPlugin {
 			}
 		}
 		return true;
+	}
+
+	public void startMetrics() throws IOException {
+		Metrics mets = new Metrics(this);
+		Graph exGraph = mets.createGraph("Extra Stats");
+
+		exGraph.addPlotter(new Metrics.Plotter("Messages Sent") {
+
+			@Override
+			public int getValue() {
+				return sentMessages;
+			}
+
+		});
+
+		mets.start();
 	}
 }
