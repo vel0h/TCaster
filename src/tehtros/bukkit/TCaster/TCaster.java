@@ -8,8 +8,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import tehtros.bukkit.Exceptions.*;
-import tehtros.bukkit.TCastAPI.*;
+import tehtros.bukkit.Exceptions.FailedConfigSave;
+import tehtros.bukkit.Exceptions.NoNameSupplied;
+import tehtros.bukkit.Exceptions.NotValidColor;
+import tehtros.bukkit.TCastAPI.TCastAPI;
 
 /**
  * 
@@ -20,8 +22,9 @@ import tehtros.bukkit.TCastAPI.*;
  */
 public class TCaster extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
-	public static TCaster plugin;
-
+	private boolean DEVBUG = true;
+	private int sentMessages = 0;
+	
 	TCastAPI api = new TCastAPI(this);
 
 	public void onEnable() {
@@ -47,6 +50,8 @@ public class TCaster extends JavaPlugin {
 					text += words;
 				}
 				api.tcast(text);
+				sentMessages++;
+				sendGraph();
 			}
 		}
 
@@ -97,5 +102,24 @@ public class TCaster extends JavaPlugin {
 			}
 		}
 		return true;
+	}
+	
+	private void sendGraph() {
+		try {
+			Metrics mets = new Metrics(this);
+			
+			mets.addCustomData(new Metrics.Plotter("Messages Sent") {
+		        @Override
+		        public int getValue() {
+		            return sentMessages;
+		        }
+		    });
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(DEVBUG) {
+			log.info("[DEVBUG] Sent Messages: " + sentMessages);
+		}
 	}
 }
