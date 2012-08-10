@@ -3,7 +3,6 @@ package tehtros.bukkit.TCastAPI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,7 +10,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import tehtros.bukkit.Exceptions.*;
+import tehtros.bukkit.Exceptions.FailedConfigLoad;
+import tehtros.bukkit.Exceptions.FailedConfigSave;
+import tehtros.bukkit.Exceptions.NoNameSupplied;
+import tehtros.bukkit.Exceptions.NotValidColor;
 
 /**
  * 
@@ -21,41 +23,36 @@ import tehtros.bukkit.Exceptions.*;
  * 
  */
 public class TCastAPI extends JavaPlugin {
-	public static final Logger log = Logger.getLogger("Minecraft");
 	public final Plugin plugin;
-	
+
 	private String name;
 	private String chatcolor;
+	private String trackip;
 
 	private FileConfiguration config = null;
 	private File configFile = null;
-	
+
 	public TCastAPI(final Plugin plugin) {
+		if(trackip.equals("true")) {
+			plugin.getLogger().info("NOTICE: The \"logip\" option in the config.ylm is set to TRUE! We will collect the server's IP address.");
+		}
 		this.plugin = plugin;
-		tcastreload();
+		try {
+			tcastreload();
+		} catch(FailedConfigLoad e) {
+			e.printStackTrace();
+		}
 	}
 
-	private String config(String input) {
+	private String config(String input) throws FileNotFoundException, IOException, InvalidConfigurationException, FailedConfigLoad {
 		// Check for config. + Other crap.
-		try {
-			if(configFile == null) {
-				configFile = new File(new File("plugins", "TCastAPI"), "TCastAPI.yml");
-			}
-		} catch(Exception e) {
-			
+		if(configFile == null) {
+			configFile = new File(new File("plugins", "TCastAPI"), "TCastAPI.yml");
 		}
 		config = YamlConfiguration.loadConfiguration(configFile);
 
 		// Reload the config.
-		try {
-			config.load(configFile);
-		} catch(FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch(IOException e1) {
-			e1.printStackTrace();
-		} catch(InvalidConfigurationException e1) {
-			e1.printStackTrace();
-		}
+		config.load(configFile);
 
 		// Reload the individual thingys.
 		String tname = config.getString("name");
@@ -70,6 +67,12 @@ public class TCastAPI extends JavaPlugin {
 		}
 		tcolor = config.getString("chatcolor", "&a");
 
+		String tip = config.getString("logip");
+		if(tip == null) {
+			config.set("logip", "&a");
+		}
+		tcolor = config.getString("logip", "true");
+
 		// Save teh config.
 		try {
 			config.save(configFile);
@@ -83,6 +86,8 @@ public class TCastAPI extends JavaPlugin {
 				return tname;
 			} else if(input.equalsIgnoreCase("chatcolor")) {
 				return tcolor;
+			} else if(input.equalsIgnoreCase("trackip")) {
+				return tip;
 			} else {
 				return "";
 			}
@@ -106,7 +111,7 @@ public class TCastAPI extends JavaPlugin {
 	 * 
 	 * @param newname
 	 * @return true if the name was successfully changed.
-	 * @throws NoNameSupplied 
+	 * @throws NoNameSupplied
 	 */
 	public boolean tcastname(String newname) throws NoNameSupplied {
 		if(!newname.isEmpty()) {
@@ -152,21 +157,32 @@ public class TCastAPI extends JavaPlugin {
 	 * Reloads the TCast API configuration.
 	 * 
 	 * @return true if the configuration was successfully reloaded.
+	 * @throws FailedConfigLoad
 	 */
-	public boolean tcastreload() {
-		name = config("name");
-		chatcolor = config("chatcolor");
+	public boolean tcastreload() throws FailedConfigLoad {
+		try {
+			name = config("name");
+			chatcolor = config("chatcolor");
+		} catch(FileNotFoundException e) {
+			throw new FailedConfigLoad();
+		} catch(IOException e) {
+			throw new FailedConfigLoad();
+		} catch(InvalidConfigurationException e) {
+			throw new FailedConfigLoad();
+		} catch(FailedConfigLoad e) {
+			throw new FailedConfigLoad();
+		}
 		return true;
 	}
 
 	public String getTCastName() {
 		return name;
 	}
-	
+
 	public String getChatColor() {
 		return chatcolor;
 	}
-	
+
 	public String colors(String color) {
 		return color.replaceAll("&(?=[0-9a-fA-FkKmMoOlLnNrR])", "\u00a7");
 	}

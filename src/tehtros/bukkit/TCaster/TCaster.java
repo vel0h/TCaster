@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import tehtros.bukkit.Exceptions.FailedConfigLoad;
 import tehtros.bukkit.Exceptions.FailedConfigSave;
 import tehtros.bukkit.Exceptions.NoNameSupplied;
 import tehtros.bukkit.Exceptions.NotValidColor;
@@ -84,21 +85,24 @@ public class TCaster extends JavaPlugin {
 			if(sender.hasPermission("tcaster.color")) {
 				try {
 					api.tcastcolor(args[0]);
+					sender.sendMessage(api.colors(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The chat color has been changed to " + api.getChatColor() + "THIS" + ChatColor.YELLOW + "!"));
 				} catch(NotValidColor e) {
 					sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "You must supply a valid colorcode! (Ex. &a)");
 				} catch(FailedConfigSave e) {
 					sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The new config failed to save!");
+					sender.sendMessage(api.colors(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The chat color has been changed to " + api.getChatColor() + "THIS" + ChatColor.YELLOW + ", but NOT SAVED!"));
 				}
-
-				sender.sendMessage(api.colors(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The chat color has been changed to " + api.getChatColor() + "THIS" + ChatColor.YELLOW + "!"));
 			}
 		}
 
 		if(cmd.getLabel().equals("tcastreload")) {
 			if(sender.hasPermission("tcaster.reload")) {
-				if(api.tcastreload()) {
+				try {
+					api.tcastreload();
 					sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "has been reloaded!");
 					sender.sendMessage(api.colors(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.DARK_PURPLE + api.getTCastName() + ChatColor.YELLOW + " is ready to chat!"));
+				} catch(FailedConfigLoad e) {
+					sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_RED + "TCaster" + ChatColor.GOLD + "] " + ChatColor.YELLOW + "The config failed to load!");
 				}
 			}
 		}
