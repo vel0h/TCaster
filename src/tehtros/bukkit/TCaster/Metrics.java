@@ -91,7 +91,7 @@ public class Metrics {
     /**
      * Interval of time to ping (in minutes)
      */
-    private static final int PING_INTERVAL = 10;
+    private static final int PING_INTERVAL = 30;
 
     /**
      * The plugin this metrics submits for

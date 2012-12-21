@@ -117,7 +117,9 @@ public class TCaster extends JavaPlugin {
 
 			@Override
 			public int getValue() {
-				return sentMessages;
+				int tempMess = sentMessages;
+				sentMessages = 0;
+				return tempMess;
 			}
 
 		});

@@ -27,15 +27,11 @@ public class TCastAPI extends JavaPlugin {
 
 	private String name;
 	private String chatcolor;
-	private String trackip;
 
 	private FileConfiguration config = null;
 	private File configFile = null;
 
 	public TCastAPI(final Plugin plugin) {
-		if(trackip.equals("true")) {
-			plugin.getLogger().info("NOTICE: The \"logip\" option in the config.ylm is set to TRUE! We will collect the server's IP address.");
-		}
 		this.plugin = plugin;
 		try {
 			tcastreload();
@@ -44,7 +40,7 @@ public class TCastAPI extends JavaPlugin {
 		}
 	}
 
-	private String config(String input) throws FileNotFoundException, IOException, InvalidConfigurationException, FailedConfigLoad {
+	private String config(String input) throws InvalidConfigurationException {
 		// Check for config. + Other crap.
 		if(configFile == null) {
 			configFile = new File(new File("plugins", "TCastAPI"), "TCastAPI.yml");
@@ -52,7 +48,11 @@ public class TCastAPI extends JavaPlugin {
 		config = YamlConfiguration.loadConfiguration(configFile);
 
 		// Reload the config.
-		config.load(configFile);
+		try {
+			config.load(configFile);
+		} catch(FileNotFoundException e1) {
+		} catch(IOException e1) {
+		}
 
 		// Reload the individual thingys.
 		String tname = config.getString("name");
@@ -67,12 +67,6 @@ public class TCastAPI extends JavaPlugin {
 		}
 		tcolor = config.getString("chatcolor", "&a");
 
-		String tip = config.getString("logip");
-		if(tip == null) {
-			config.set("logip", "&a");
-		}
-		tcolor = config.getString("logip", "true");
-
 		// Save teh config.
 		try {
 			config.save(configFile);
@@ -86,8 +80,6 @@ public class TCastAPI extends JavaPlugin {
 				return tname;
 			} else if(input.equalsIgnoreCase("chatcolor")) {
 				return tcolor;
-			} else if(input.equalsIgnoreCase("trackip")) {
-				return tip;
 			} else {
 				return "";
 			}
@@ -163,14 +155,8 @@ public class TCastAPI extends JavaPlugin {
 		try {
 			name = config("name");
 			chatcolor = config("chatcolor");
-		} catch(FileNotFoundException e) {
-			throw new FailedConfigLoad();
-		} catch(IOException e) {
-			throw new FailedConfigLoad();
 		} catch(InvalidConfigurationException e) {
-			throw new FailedConfigLoad();
-		} catch(FailedConfigLoad e) {
-			throw new FailedConfigLoad();
+			e.printStackTrace();
 		}
 		return true;
 	}
